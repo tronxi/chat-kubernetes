@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-rabbit
+  labels:
+    app: chat-rabbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-rabbit
+  template:
+    metadata:
+      labels:
+        app: chat-rabbit
+    spec:
+      containers:
+        - name: chat-rabbit
+          image: tronxi/rabbitmq-stomp:0.0.1
+          resources:
+            limits:
+              cpu: "0.9"
+              memory: "900Mi"
+            requests:
+              cpu: "0.8"
+              memory: "850Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-rabbit
+  labels:
+    app: chat-rabbit
+spec:
+  selector:
+    app: chat-rabbit
+  ports:
+    - protocol: TCP
+      name: ui
+      port: 15672
+      targetPort: 15672
+    - protocol: TCP
+      name: amqp
+      port: 5672
+      targetPort: 5672
+    - protocol: TCP
+      name: stomp
+      port: 61613
+      targetPort: 61613

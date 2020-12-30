@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-service
+  labels:
+    app: chat-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-service
+  template:
+    metadata:
+      labels:
+        app: chat-service
+    spec:
+      containers:
+        - name: chat-service
+          image: tronxi/chat-service:0.0.1
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 30
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 30
+          env:
+            - name: profile
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: profile
+            - name: chat_db
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: chat_db
+            - name: initializationMode
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: initializationMode
+            - name: ddlAuto
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: ddlAuto
+            - name: db_pass
+              valueFrom:
+                secretKeyRef:
+                  name: chat-secret
+                  key: db_pass
+            - name: rabbit_pass
+              valueFrom:
+                secretKeyRef:
+                  name: chat-secret
+                  key: rabbit_pass
+            - name: secret_token
+              valueFrom:
+                secretKeyRef:
+                  name: chat-secret
+                  key: secret_token
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-service
+  labels:
+    app: chat-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: chat-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

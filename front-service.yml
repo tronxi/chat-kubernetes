@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-front
+  labels:
+    app: chat-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-front
+  template:
+    metadata:
+      labels:
+        app: chat-front
+    spec:
+      containers:
+        - name: chat-front
+          image: tronxi/chat-front:0.0.2
+          imagePullPolicy: Never
+          resources:
+            limits:
+              cpu: "0.4"
+              memory: "300Mi"
+            requests:
+              cpu: "0.1"
+              memory: "100Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-front
+  labels:
+    app: chat-front
+spec:
+  type: LoadBalancer
+  selector:
+    app: chat-front
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

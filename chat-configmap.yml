@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chat-configmap
+data:
+  profile: "docker"
+  chat_db: "localhos"
+  initializationMode: "never"
+  ddlAuto: "update"
