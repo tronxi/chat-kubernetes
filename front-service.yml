@@ -16,8 +16,7 @@ spec:
     spec:
       containers:
         - name: chat-front
-          image: tronxi/chat-front:0.0.2
-          imagePullPolicy: Never
+          image: tronxi/chat-front:local
           resources:
             limits:
               cpu: "0.4"
