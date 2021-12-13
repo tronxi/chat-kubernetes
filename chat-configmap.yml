@@ -3,7 +3,15 @@ kind: ConfigMap
 metadata:
   name: chat-configmap
 data:
-  profile: "docker"
-  chat_db: "localhos"
+  profile: "prod"
+  dbHost: "tronxi.ddns.net"
+  dbPort: "3306"
+  dbUser: "chat"
+  rabbitHost: "chat-rabbit"
+  rabbitPort: "61613"
+  rabbitUser: "guest"
   initializationMode: "never"
   ddlAuto: "update"
+  serverUrl: "http://localhost:8080"
+  serverWsUrl: "ws://localhost:8080/socket"
+  baseRef: "\\/"

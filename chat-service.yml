@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chat-service
+  name: chat-server
   labels:
-    app: chat-service
+    app: chat-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: chat-service
+      app: chat-server
   template:
     metadata:
       labels:
-        app: chat-service
+        app: chat-server
     spec:
       containers:
-        - name: chat-service
-          image: tronxi/chat-service:0.0.1
+        - name: chat-server
+          image: tronxi/chat-server
           resources:
             limits:
               cpu: "0.9"
@@ -38,16 +38,36 @@ spec:
             initialDelaySeconds: 90
             periodSeconds: 30
           env:
+            - name: firebaseConfig
+              valueFrom:
+                secretKeyRef:
+                  name: chat-secret
+                  key: firebaseConfig
             - name: profile
               valueFrom:
                 configMapKeyRef:
                   name: chat-configmap
                   key: profile
-            - name: chat_db
+            - name: dbHost
               valueFrom:
                 configMapKeyRef:
                   name: chat-configmap
-                  key: chat_db
+                  key: dbHost
+            - name: dbPort
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: dbPort
+            - name: dbUser
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: dbUser
+            - name: dbPassword
+              valueFrom:
+                secretKeyRef:
+                  name: chat-secret
+                  key: dbPassword
             - name: initializationMode
               valueFrom:
                 configMapKeyRef:
@@ -58,32 +78,42 @@ spec:
                 configMapKeyRef:
                   name: chat-configmap
                   key: ddlAuto
-            - name: db_pass
+            - name: rabbitHost
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: rabbitHost
+            - name: rabbitPassword
               valueFrom:
                 secretKeyRef:
                   name: chat-secret
-                  key: db_pass
-            - name: rabbit_pass
+                  key: rabbitPassword
+            - name: rabbitPort
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: rabbitPort
+            - name: rabbitUser
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: rabbitUser
+            - name: secretToken
               valueFrom:
                 secretKeyRef:
                   name: chat-secret
-                  key: rabbit_pass
-            - name: secret_token
-              valueFrom:
-                secretKeyRef:
-                  name: chat-secret
-                  key: secret_token
+                  key: secretToken
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: chat-service
+  name: chat-server
   labels:
-    app: chat-service
+    app: chat-server
 spec:
   type: LoadBalancer
   selector:
-    app: chat-service
+    app: chat-server
   ports:
     - protocol: TCP
       port: 8080

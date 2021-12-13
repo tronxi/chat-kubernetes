@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: chat-front
-          image: tronxi/chat-front:local
+          image: tronxi/chat-front:latest
           resources:
             limits:
               cpu: "0.4"
@@ -24,6 +24,22 @@ spec:
             requests:
               cpu: "0.1"
               memory: "100Mi"
+          env:
+            - name: serverUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: serverUrl
+            - name: serverWsUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: serverWsUrl
+            - name: baseRef
+              valueFrom:
+                configMapKeyRef:
+                  name: chat-configmap
+                  key: baseRef
 ---
 apiVersion: v1
 kind: Service
